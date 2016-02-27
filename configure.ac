@@ -1,5 +1,20 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT()
+
+AC_INIT(ruby,[m4_esyscmd([build-aux/git-version-gen .tarball-version])])
+
+m4_define([rb_version],[m4_esyscmd([build-aux/git-version-gen .tarball-version])])
+
+m4_define([ruby_major_version],[m4_esyscmd([build-aux/git-version-gen --major .tarball-version])])
+m4_define([ruby_minor_version],[m4_esyscmd([build-aux/git-version-gen --minor .tarball-version])])
+m4_define([ruby_teeny_version],[m4_esyscmd([build-aux/git-version-gen --micro .tarball-version])])
+
+unset GREP_OPTIONS
+AC_PROG_GREP
+
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE([1.9 tar-ustar])
+AM_MAINTAINER_MODE
 
 AC_PREREQ(2.60)
 
@@ -35,7 +50,7 @@ AC_SUBST(CPPOUTFILE)])
 
 AC_DEFUN([RUBY_PROG_GNU_LD],
 [AC_CACHE_CHECK(whether the linker is GNU ld, rb_cv_prog_gnu_ld,
-[if `$CC $CFLAGS $CPPFLAGS $LDFLAGS --print-prog-name=ld 2>&1` -v 2>&1 | grep "GNU ld" > /dev/null; then
+[if `$CC $CFLAGS $CPPFLAGS $LDFLAGS --print-prog-name=ld 2>&1` -v 2>&1 | $GREP "GNU ld" > /dev/null; then
   rb_cv_prog_gnu_ld=yes
 else
   rb_cv_prog_gnu_ld=no
@@ -44,23 +59,28 @@ fi
 GNU_LD=$rb_cv_prog_gnu_ld
 AC_SUBST(GNU_LD)])
 
-unset GREP_OPTIONS
-rb_version=`grep RUBY_VERSION $srcdir/version.h`
-MAJOR=`expr "$rb_version" : '#define RUBY_VERSION "\([0-9][0-9]*\)\.[0-9][0-9]*\.[0-9][0-9]*"'`
-MINOR=`expr "$rb_version" : '#define RUBY_VERSION "[0-9][0-9]*\.\([0-9][0-9]*\)\.[0-9][0-9]*"'`
-TEENY=`expr "$rb_version" : '#define RUBY_VERSION "[0-9][0-9]*\.[0-9][0-9]*\.\([0-9][0-9]*\)"'`
+AC_SUBST(MAJOR,[m4_esyscmd([build-aux/git-version-gen --major .tarball-version])])
+AC_SUBST(MINOR,[m4_esyscmd([build-aux/git-version-gen --minor .tarball-version])])
+AC_SUBST(TEENY,[m4_esyscmd([build-aux/git-version-gen --micro .tarball-version])])
+
 if test "$MAJOR" = ""; then
-  AC_MSG_ERROR(could not determine MAJOR number from version.h)
+  AC_MSG_ERROR(could not determine MAJOR number)
 fi
 if test "$MINOR" = ""; then
-  AC_MSG_ERROR(could not determine MINOR number from version.h)
+  AC_MSG_ERROR(could not determine MINOR number)
 fi
 if test "$TEENY" = ""; then
-  AC_MSG_ERROR(could not determine TEENY number from version.h)
+  AC_MSG_ERROR(could not determine TEENY number)
 fi
-AC_SUBST(MAJOR)
-AC_SUBST(MINOR)
-AC_SUBST(TEENY)
+
+dnl build with deprecated SSL symbols
+AC_ARG_ENABLE([oldssl],
+    AS_HELP_STRING([--enable-oldssl], [Enable use of deprecated SSL symbols]))
+
+AS_IF([test "x$enable_oldssl" = "xyes"], [
+  CFLAGS="-DENABLE_OLDSSL $CFLAGS"
+])
+
 dnl checks for alternative programs
 AC_ARG_WITH(gcc, [  --without-gcc           never use gcc], [
 	case $withval in
@@ -82,7 +102,7 @@ test -z "$CC" || ac_cv_prog_CC="$CC"
 if test "$program_prefix" = NONE; then
   program_prefix=
 fi
-AC_CANONICAL_TARGET
+
 target_os=`echo $target_os | sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/'`
 ac_install_sh='' # unusable for extension libraries.
 
@@ -1881,3 +1901,35 @@ AC_CONFIG_FILES(Makefile, [{
       } >> confmk$$.tmp && mv -f confmk$$.tmp Makefile],
 [RUBY_INSTALL_NAME=$RUBY_INSTALL_NAME EXEEXT=$EXEEXT])
 AC_OUTPUT
+
+echo "---"
+echo "Configuration summary for $PACKAGE_NAME version "
+echo ""
+echo "   * Installation prefix: $prefix"
+echo "   * exec prefix:         $exec_prefix"
+echo "   * with pthread:        $enable_pthread"
+echo "   * site libraries path: $SITE_DIR"
+echo "   * vendor path:         $VENDOR_DIR"
+echo "   * default kcode:       $DEFAULT_KCODE"
+echo "   * target OS:           $target_os"
+echo "   * compiler:            $CC"
+echo "   * frame address:       $frame_address"
+echo "   * CFLAGS:              $CFLAGS"
+echo "   * CPPFLAGS:            $CPPFLAGS"
+echo "   * LDFLAGS:             $LDFLAGS"
+echo "   * enable shared libs:  $ENABLE_SHARED"
+echo "   * dynamic library ext: $DLEXT"
+echo "   * strip command:       $STRIP"
+echo "   * install doc:         $install_doc"
+echo "   * man page type:       $MANTYPE"
+if test -n "$enable_oldssl" ; then
+echo "   * deprecated ssl:      $enable_oldssl"
+fi
+if test "$search_path" != ""; then
+echo "   * search path:         $search_path"
+fi
+if test -n "$EXTSTATIC"; then
+echo "   * static-linked-ext:   yes"
+fi
+echo ""
+echo "---"

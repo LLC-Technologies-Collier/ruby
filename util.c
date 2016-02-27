@@ -19,7 +19,7 @@
 #include <float.h>
 
 #ifdef _WIN32
-#include "missing/file.h"
+#include "missing.d//file.h"
 #endif
 #if defined(__CYGWIN32__) || defined(_WIN32)
 #include <io.h>

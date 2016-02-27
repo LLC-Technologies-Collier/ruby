@@ -168,26 +168,26 @@ random.c
 
 st.[ch]:
 x68/*:
-missing/alloca.c:
-missing/dup2.c:
-missing/finite.c:
-missing/hypot.c:
-missing/isinf.c:
-missing/isnan.c:
-missing/memcmp.c:
-missing/memmove.c:
-missing/strcasecmp.c:
-missing/strchr.c:
-missing/streror.c:
-missing/strftime.c:
-missing/strncasecmp.c:
-missing/strstr.c:
-missing/strtol.c:
+missing.d/alloca.c:
+missing.d/dup2.c:
+missing.d/finite.c:
+missing.d/hypot.c:
+missing.d/isinf.c:
+missing.d/isnan.c:
+missing.d/memcmp.c:
+missing.d/memmove.c:
+missing.d/strcasecmp.c:
+missing.d/strchr.c:
+missing.d/streror.c:
+missing.d/strftime.c:
+missing.d/strncasecmp.c:
+missing.d/strstr.c:
+missing.d/strtol.c:
 ext/digest/sha1/sha1.[ch]:
 
   These files are all under public domain.
 
-missing/strtod.c:
+missing.d/strtod.c:
 
   This file will not be used on most platforms depending on how the
   configure script results.  In any case you must not receive any fee
@@ -204,7 +204,7 @@ missing/strtod.c:
     software for any purpose.  It is provided "as is" without
     express or implied warranty.
 
-missing/strtoul.c:
+missing.d/strtoul.c:
 
   This file will not be used on most platforms depending on how the
   configure script results.  In any case you must not receive any fee
@@ -220,9 +220,9 @@ missing/strtoul.c:
     software for any purpose.  It is provided "as is" without
     express or implied warranty.
 
-missing/erf.c:
-missing/crypt.c:
-missing/vsnprintf.c:
+missing.d/erf.c:
+missing.d/crypt.c:
+missing.d/vsnprintf.c:
 
   This file is under the old-style BSD license.  Note that the
   paragraph 3 below is now null and void.

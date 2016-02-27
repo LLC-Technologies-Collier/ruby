@@ -1,33 +1,20 @@
+
 SHELL = /bin/sh
 NULLCMD = :
 
 #### Start of system configuration section. ####
 
-srcdir = @srcdir@
 VPATH = $(srcdir):$(srcdir)/missing
 
-CC = @CC@
-YACC = @YACC@
 PURIFY =
 AUTOCONF = autoconf
 @SET_MAKE@
 MKFILES = @MAKEFILES@
 
-prefix = @prefix@
 exec_prefix = @exec_prefix@
-bindir = @bindir@
-sbindir = @sbindir@
-libdir = @libdir@
-libexecdir = @libexecdir@
-datarootdir = @datarootdir@
-datadir = @datadir@
-arch = @arch@
-sitearch = @sitearch@
-sitedir = @sitedir@
 
 TESTUI = console
 TESTS =
-RDOCTARGET = @RDOCTARGET@
 
 EXTOUT = @EXTOUT@
 RIDATADIR = $(DESTDIR)$(datadir)/ri/$(MAJOR).$(MINOR)/system
@@ -35,8 +22,6 @@ RIDATADIR = $(DESTDIR)$(datadir)/ri/$(MAJOR).$(MINOR)/system
 empty =
 OUTFLAG = @OUTFLAG@$(empty)
 CFLAGS = @CFLAGS@ @XCFLAGS@ @ARCH_FLAG@
-cflags = @cflags@
-optflags = @optflags@
 debugflags = @debugflags@
 CPPFLAGS = -I. -I$(srcdir) @CPPFLAGS@
 LDFLAGS = @STATIC@ $(CFLAGS) @LDFLAGS@
@@ -47,36 +32,26 @@ LIBS = @LIBS@ $(EXTLIBS)
 MISSING = @LIBOBJS@ @ALLOCA@
 LDSHARED = @LIBRUBY_LDSHARED@
 DLDFLAGS = @LIBRUBY_DLDFLAGS@ $(EXTLDFLAGS) @ARCH_FLAG@
-SOLIBS = @SOLIBS@
-MAINLIBS = @MAINLIBS@
-MINIOBJS = @MINIOBJS@
 
-RUBY_INSTALL_NAME=@RUBY_INSTALL_NAME@
-RUBY_SO_NAME=@RUBY_SO_NAME@
 EXEEXT = @EXEEXT@
 PROGRAM=$(RUBY_INSTALL_NAME)$(EXEEXT)
 RUBY = $(RUBY_INSTALL_NAME)
 MINIRUBY = @MINIRUBY@ $(MINIRUBYOPT)
 RUNRUBY = @RUNRUBY@ $(RUNRUBYOPT) --
 
+DISTCLEANFILES = \
+        ext/dl/call.func \
+        ext/dl/callback.func \
+        ext/dl/cbtable.func \
+        ext/dl/dlconfig.h \
+        ext/dl/dlconfig.rb \
+        ext/tk/config_list \
+        ext/win32ole/.document
+
+
 #### End of system configuration section. ####
 
-MAJOR=	@MAJOR@
-MINOR=	@MINOR@
-TEENY=	@TEENY@
-
-LIBRUBY_A     = @LIBRUBY_A@
-LIBRUBY_SO    = @LIBRUBY_SO@
-LIBRUBY_ALIASES= @LIBRUBY_ALIASES@
-LIBRUBY	      = @LIBRUBY@
-LIBRUBYARG    = @LIBRUBYARG@
-LIBRUBYARG_STATIC = @LIBRUBYARG_STATIC@
-LIBRUBYARG_SHARED = @LIBRUBYARG_SHARED@
-
-PREP          = @PREP@
-ARCHFILE      = @ARCHFILE@
 SETUP         =
-EXTSTATIC     = @EXTSTATIC@
 
 RM            = rm -f
 NM            = @NM@
@@ -87,7 +62,6 @@ AS            = @AS@
 ASFLAGS       = @ASFLAGS@
 
 OBJEXT        = @OBJEXT@
-MANTYPE	      = @MANTYPE@
 
 INSTALLED_LIST= .installed.list
 #### End of variables
@@ -158,11 +132,7 @@ $(MKFILES): config.status $(srcdir)/common.mk
 		$(MAKE) -f conftest.mk | grep '^AUTO_REMAKE$$' >/dev/null 2>&1 || \
 		{ echo "Makefile updated, restart."; exit 1; }
 
-config.status:	$(srcdir)/configure
-		MINIRUBY="$(MINIRUBY)" $(SHELL) ./config.status --recheck
-
-$(srcdir)/configure: $(srcdir)/configure.in
-		cd $(srcdir) && $(AUTOCONF)
+CONFIGURE_DEPENDENCIES = $(srcdir)/configure.ac
 
 lex.c: keywords
 	( gperf -C -p -j1 -i 1 -g -o -t -N rb_reserved_word -k1,3,$$ $? > $@.tmp && mv $@.tmp $@ ) || \
